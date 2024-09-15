@@ -8,8 +8,7 @@ $(document).ready(function() {
         'images/image6.png', 
         'images/image7.png', 
         'images/image8.png',
-        'images/image9.png', 
-        
+        '' // La case vide
     ];
     
     let currentOrder = [];
@@ -24,7 +23,11 @@ $(document).ready(function() {
     function displayTaquin() {
         $('#taquin').empty();
         currentOrder.forEach((img, index) => {
-            $('#taquin').append(`<img src="${img}" class="tile" data-index="${index}" alt="Taquin tile">`);
+            if (img) {
+                $('#taquin').append(`<img src="${img}" class="tile" data-index="${index}" alt="Taquin tile">`);
+            } else {
+                $('#taquin').append(`<div class="tile empty" data-index="${index}"></div>`);
+            }
         });
     }
 
@@ -38,7 +41,10 @@ $(document).ready(function() {
 
     function startGame() {
         currentOrder = [...images];
-        shuffleArray(currentOrder);
+        do {
+            shuffleArray(currentOrder);
+        } while (!isSolvable(currentOrder));
+        
         displayTaquin();
         $('#message').text('');
         $('#restartButton').hide();
@@ -47,13 +53,33 @@ $(document).ready(function() {
             const clickedIndex = $(this).data('index');
             const emptyIndex = currentOrder.indexOf('');
             
-            if ((Math.abs(clickedIndex - emptyIndex) === 1 && Math.floor(clickedIndex / 3) === Math.floor(emptyIndex / 3)) ||
-                Math.abs(clickedIndex - emptyIndex) === 3) {
+            if (isAdjacent(clickedIndex, emptyIndex)) {
                 [currentOrder[clickedIndex], currentOrder[emptyIndex]] = [currentOrder[emptyIndex], currentOrder[clickedIndex]];
                 displayTaquin();
                 checkWin();
             }
         });
+    }
+
+    function isAdjacent(index1, index2) {
+        const row1 = Math.floor(index1 / 3);
+        const col1 = index1 % 3;
+        const row2 = Math.floor(index2 / 3);
+        const col2 = index2 % 3;
+        return (Math.abs(row1 - row2) + Math.abs(col1 - col2)) === 1;
+    }
+
+    function isSolvable(puzzle) {
+        let inversions = 0;
+        const flatPuzzle = puzzle.filter(Boolean); // Enlève la case vide
+        for (let i = 0; i < flatPuzzle.length - 1; i++) {
+            for (let j = i + 1; j < flatPuzzle.length; j++) {
+                if (flatPuzzle[i] > flatPuzzle[j]) {
+                    inversions++;
+                }
+            }
+        }
+        return inversions % 2 === 0;
     }
 
     $('#restartButton').click(startGame);
