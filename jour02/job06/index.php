@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Job XX</title>
+    <title>Job 06</title>
+    <style id="konami-style"></style>
 </head>
 <body>
-    <!-- Contenu spécifique au job ici -->
     <script src="script.js"></script>
 </body>
 </html>
